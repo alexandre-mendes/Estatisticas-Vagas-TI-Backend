@@ -1,17 +1,39 @@
 package br.com.projetoPI.estatisticasVagasTI.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Vaga {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "vagas")
+public class Vaga implements Serializable {
+
+	private static final long serialVersionUID = 1095751545050881629L;
+
+	@Id
+	@GeneratedValue(generator = "vagas_id_vag_seq", strategy = GenerationType.AUTO)
+	@Column(name = "id_vag")
 	private Long id;
+	
+	@Column(name = "car")
 	private String cargo;
+	
+	@Column(name = "emp")
 	private String empresa;
+	
+	@Column(name = "url")
 	private String url;
+	
+	@Column(name = "dat")
 	private LocalDate data;
 	
-	public Vaga() {
-		
-	}
+	public Vaga() {}
 	
 	public Vaga(String cargo,String empresa,String url, LocalDate data) {
 		this.cargo = cargo;

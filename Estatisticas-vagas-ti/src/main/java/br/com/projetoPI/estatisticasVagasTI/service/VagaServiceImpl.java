@@ -1,5 +1,4 @@
-package br.com.projetoPI.estatisticasVagasTI.controller;
-
+package br.com.projetoPI.estatisticasVagasTI.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,34 +14,63 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.gargoylesoftware.htmlunit.html.DomNode;
+import org.springframework.stereotype.Service;
 
 import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
+import br.com.projetoPI.estatisticasVagasTI.repository.VagaRepository;
 
-
-
-@RestController
-public class Controller {
+@Service
+public class VagaServiceImpl implements VagaService {
 	
 	@Autowired 
     private JavaMailSender mailSender;
 	
-	DomNode label;
-	DomNode value;
-	List<Vaga> vagas = new ArrayList<Vaga>();
-	List<String> urlsVagas = new ArrayList<String>();
+	@Autowired
+	private VagaRepository vagaRepository;
+	
 	private static final String url = "https://www.linkedin.com/jobs/search/?f_TP=1&f_TPR=r86400&geoId=103836099&keywords=Java&location=Fortaleza%2C%2BCear%C3%A1%2C%2BBrasil&originalSubdomain=br";	
 	public int quantidadeVagas;
+	
+	
+	public ResponseEntity<Iterable<Vaga>> buscarVagas() {
+		List<Vaga> vagas;
+		List<String> urlVagas;
+		List<String> urlsDaBase;
+		
+		urlVagas = buscaUrlsVagas();
+		vagas = preencheAtributosVagas(urlVagas);
+		
+		urlVagas = vagas.stream().filter(distinctByKey(u -> u.getUrl())).map(Vaga::getUrl).collect(Collectors.toList());
+		urlsDaBase = vagaRepository.obterVagasPorUrls(urlVagas).stream().map(Vaga::getUrl).collect(Collectors.toList());
+		vagas = vagas.stream().filter(v -> !urlsDaBase.contains(v.getUrl())).collect(Collectors.toList());
+		
+		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.saveAll(vagas), HttpStatus.OK);
+	}
 
-/*
- * Caputura a estrutura html da pagina que contem as vagas
- * */
-	public static Document getHtml(String url) {
+	private List<String> buscaUrlsVagas() {
+		List<String> urlVagas = new ArrayList<String>();
+		
+		Elements vagas = getHtml(url)
+				.select("a");
+		for(Element vaga:vagas) {
+			String link = vaga.attr("abs:href");
+			if(link.contains("/jobs/view")) {
+				urlVagas.add(link.substring(0, link.indexOf("?")));
+				quantidadeVagas+=1;
+			}
+		}
+		
+		return urlVagas;
+	}
+	
+	/*
+	 * Caputura a estrutura html da pagina que contem as vagas
+	 * */
+	private Document getHtml(String url) {
 		Document html = null;
 		try {
 			html = Jsoup.connect(url)
@@ -51,31 +79,10 @@ public class Controller {
 			e.printStackTrace();
 		}
 		return html;
-	};
-	
-	@GetMapping("/listaVagas")
-	public List<Vaga> listarVagas() {
-		
-		buscaUrlsVagas();
-		vagas = preencheAtributosVagas(urlsVagas);
-		return vagas.stream().filter(distinctByKey(u->u.getUrl())).collect(Collectors.toList());
-		
 	}
-
-	public void buscaUrlsVagas() {
-		Elements vagas = getHtml(url)
-				.select("a");
-		for(Element vaga:vagas) {
-			String link = vaga.attr("abs:href");
-			if(link.contains("/jobs/view")) {
-				urlsVagas.add(link.substring(0, link.indexOf("?")));
-				quantidadeVagas+=1;
-			}
-		}
-	
-	};
 	
 	private List<Vaga> preencheAtributosVagas(List<String> urls) {
+		List<Vaga> vagas = new ArrayList<>();
 		
 		for(String url:urls) {
 			String descricaoCargo = getHtml(url).getElementsByClass("topcard__title").first().text();
@@ -91,16 +98,14 @@ public class Controller {
 			vagas.add(novaVaga);
 		}
 		return vagas;
-		
 	}
 
-
-	private static <T> Predicate<T> distinctByKey(
+	private <T> Predicate<T> distinctByKey(
 		    Function<? super T, ?> keyExtractor) {
 		  
 		    Map<Object, Boolean> seen = new ConcurrentHashMap<>(); 
 		    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null; 
-		}
+	}
 	
 	private String sendMail(Vaga vaga) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -121,11 +126,10 @@ public class Controller {
 		if(isEmptyOrNull(vaga.getcargo()) || isEmptyOrNull(vaga.getEmpresa())
 		|| isEmptyOrNull(vaga.getData().toString())) {
 			sendMail(vaga);
-		};
+		}
 	}
 	
 	private boolean isEmptyOrNull(String parametro) {
 		return parametro.isEmpty() || parametro ==null;
 	}
-
 }

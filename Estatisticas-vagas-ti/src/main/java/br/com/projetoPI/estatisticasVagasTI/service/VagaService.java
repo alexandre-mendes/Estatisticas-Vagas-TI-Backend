@@ -9,4 +9,6 @@ import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
 public interface VagaService {
 
 	ResponseEntity<Iterable<Vaga>> buscarVagas();
+	
+	ResponseEntity<Iterable<Vaga>> buscarVagasDaBase();
 }

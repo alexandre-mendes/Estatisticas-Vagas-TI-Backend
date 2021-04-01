@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import enumerate.Linguagem;
+
 @Entity
 @Table(name = "vagas")
 public class Vaga implements Serializable {
@@ -33,13 +35,17 @@ public class Vaga implements Serializable {
 	@Column(name = "dat")
 	private LocalDate data;
 	
+	@Column(name = "lin")
+	private Linguagem linguagem;
+	
 	public Vaga() {}
 	
-	public Vaga(String cargo,String empresa,String url, LocalDate data) {
+	public Vaga(String cargo,String empresa,String url, LocalDate data, Linguagem linguagem ) {
 		this.cargo = cargo;
 		this.empresa = empresa;
 		this.url = url;
 		this.data = data;
+		this.linguagem = linguagem;
 	}
 	
 	public Long getId() {
@@ -66,8 +72,25 @@ public class Vaga implements Serializable {
 	public String getUrl() {
 		return url;
 	}
+	
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	public LocalDate getData() {
+		return data;
+	}
+
+	public void setData(LocalDate data) {
+		this.data = data;
+	}
+
+	public Linguagem getLinguagem() {
+		return linguagem;
+	}
+
+	public void setLinguagem(Linguagem linguagem) {
+		this.linguagem = linguagem;
 	}
 
 	@Override
@@ -113,13 +136,7 @@ public class Vaga implements Serializable {
 		return true;
 	}
 
-	public LocalDate getData() {
-		return data;
-	}
 
-	public void setData(LocalDate data) {
-		this.data = data;
-	}
 
 	
 }

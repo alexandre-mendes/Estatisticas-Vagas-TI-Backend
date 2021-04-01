@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
+import enumerate.Linguagem;
 
 public interface VagaRepository extends CrudRepository<Vaga, Long> {
 
@@ -15,6 +16,8 @@ public interface VagaRepository extends CrudRepository<Vaga, Long> {
 				+ "	from 				"
 				+ "		Vaga v 			"
 				+ "	where 				"
-				+ "		v.url in (:urls)")
-	public List<Vaga> obterVagasPorUrls(@Param(value = "urls") List<String> urls);
+				+ "		v.url in (:urls)"
+				+ "	and 				"
+				+ "		v.linguagem = :linguagem")
+	public List<Vaga> obterVagasPorUrls(@Param(value = "urls") List<String> urls,@Param(value = "linguagem") Linguagem linguagem); 
 }

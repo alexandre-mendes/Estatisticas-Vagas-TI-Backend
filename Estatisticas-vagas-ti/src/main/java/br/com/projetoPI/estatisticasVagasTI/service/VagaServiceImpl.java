@@ -2,6 +2,7 @@ package br.com.projetoPI.estatisticasVagasTI.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
 import br.com.projetoPI.estatisticasVagasTI.repository.VagaRepository;
+import enumerate.Linguagem;
 
 @Service
 public class VagaServiceImpl implements VagaService {
@@ -32,26 +34,35 @@ public class VagaServiceImpl implements VagaService {
 	@Autowired
 	private VagaRepository vagaRepository;
 	
-	private static final String url = "https://www.linkedin.com/jobs/search/?f_TP=1&f_TPR=r86400&geoId=103836099&keywords=Java&location=Fortaleza%2C%2BCear%C3%A1%2C%2BBrasil&originalSubdomain=br";	
 	public int quantidadeVagas;
+	private List<Vaga> vagasParaSalvar = new ArrayList<Vaga>();
+	private List<Vaga> vagas = new ArrayList<Vaga>();
+	private List<String> urlVagas;
+	private List<String> urlsDaBase;
+	private Linguagem linguagem;
 	
+	
+	public ResponseEntity<Iterable<Vaga>> buscarVagasDaBase() {
+		
+		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.findAll(), HttpStatus.OK);
+	}
 	
 	public ResponseEntity<Iterable<Vaga>> buscarVagas() {
-		List<Vaga> vagas;
-		List<String> urlVagas;
-		List<String> urlsDaBase;
 		
-		urlVagas = buscaUrlsVagas();
-		vagas = preencheAtributosVagas(urlVagas);
+		Arrays.asList(Linguagem.values()).stream().forEach(l->{
+			linguagem = l;
+			urlVagas = buscaUrlsVagas(l.url());
+			vagas = preencheAtributosVagas(urlVagas);
+			urlVagas = vagas.stream().filter(distinctByKey(v -> v.getUrl())).map(Vaga::getUrl).collect(Collectors.toList());
+			urlsDaBase = vagaRepository.obterVagasPorUrls(urlVagas,l).stream().map(Vaga::getUrl).collect(Collectors.toList());
+			vagasParaSalvar.addAll(vagas.stream().filter(v -> !urlsDaBase.contains(v.getUrl())).collect(Collectors.toList()));
+			
+		});
 		
-		urlVagas = vagas.stream().filter(distinctByKey(u -> u.getUrl())).map(Vaga::getUrl).collect(Collectors.toList());
-		urlsDaBase = vagaRepository.obterVagasPorUrls(urlVagas).stream().map(Vaga::getUrl).collect(Collectors.toList());
-		vagas = vagas.stream().filter(v -> !urlsDaBase.contains(v.getUrl())).collect(Collectors.toList());
-		
-		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.saveAll(vagas), HttpStatus.OK);
+		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.saveAll(vagasParaSalvar), HttpStatus.OK);
 	}
 
-	private List<String> buscaUrlsVagas() {
+	private List<String> buscaUrlsVagas(String url) {
 		List<String> urlVagas = new ArrayList<String>();
 		
 		Elements vagas = getHtml(url)
@@ -85,15 +96,16 @@ public class VagaServiceImpl implements VagaService {
 		List<Vaga> vagas = new ArrayList<>();
 		
 		for(String url:urls) {
-			String descricaoCargo = getHtml(url).getElementsByClass("topcard__title").first().text();
-			Elements links = getHtml(url).getElementsByClass("topcard__org-name-link");
-			String empresa = getHtml(url).title().substring(0, getHtml(url).title().indexOf("está contrat")).trim();
+			Document urlDaPaginaVaga = getHtml(url);
+			String descricaoCargo = urlDaPaginaVaga.getElementsByClass("topcard__title").first().text();
+			Elements links = urlDaPaginaVaga.getElementsByClass("topcard__org-name-link");
+			String empresa = urlDaPaginaVaga.title().substring(0, getHtml(url).title().indexOf("está contrat")).trim();
 			for(Element link:links) {
 				if(link.absUrl("href").contains("company"))
 					empresa = link.text();
 			}
 			
-			Vaga novaVaga = new Vaga(descricaoCargo, empresa, url, LocalDate.now());
+			Vaga novaVaga = new Vaga(descricaoCargo, empresa, url, LocalDate.now(),linguagem);
 			validarVaga(novaVaga);
 			vagas.add(novaVaga);
 		}

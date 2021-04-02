@@ -19,11 +19,6 @@ public class VagaController {
 	@Autowired
 	private VagaService vagaService;
 	
-	@GetMapping(path = "/salvasAgora")
-	public ResponseEntity<Iterable<Vaga>> obterVagas() {
-		return vagaService.buscarVagas();
-	};
-	
 	@GetMapping(path = "/base")
 	public ResponseEntity<Iterable<Vaga>> obterVagasDaBase(){
 		return vagaService.buscarVagasDaBase();

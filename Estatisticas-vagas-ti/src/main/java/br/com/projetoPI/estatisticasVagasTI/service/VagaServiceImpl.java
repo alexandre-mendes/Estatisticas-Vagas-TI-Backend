@@ -39,7 +39,6 @@ public class VagaServiceImpl implements VagaService {
 	private List<Vaga> vagas = new ArrayList<Vaga>();
 	private List<String> urlVagas;
 	private List<String> urlsDaBase;
-	private Linguagem linguagem;
 	
 	
 	public ResponseEntity<Iterable<Vaga>> buscarVagasDaBase() {
@@ -49,12 +48,11 @@ public class VagaServiceImpl implements VagaService {
 	
 	public ResponseEntity<Iterable<Vaga>> buscarVagas() {
 		
-		Arrays.asList(Linguagem.values()).stream().forEach(l->{
-			linguagem = l;
-			urlVagas = buscaUrlsVagas(l.url());
-			vagas = preencheAtributosVagas(urlVagas);
+		Arrays.asList(Linguagem.values()).stream().forEach(linguagem->{
+			urlVagas = buscaUrlsVagas(linguagem.url());
+			vagas = preencheAtributosVagas(urlVagas, linguagem);
 			urlVagas = vagas.stream().filter(distinctByKey(v -> v.getUrl())).map(Vaga::getUrl).collect(Collectors.toList());
-			urlsDaBase = vagaRepository.obterVagasPorUrls(urlVagas,l).stream().map(Vaga::getUrl).collect(Collectors.toList());
+			urlsDaBase = vagaRepository.obterVagasPorUrls(urlVagas,linguagem).stream().map(Vaga::getUrl).collect(Collectors.toList());
 			vagasParaSalvar.addAll(vagas.stream().filter(v -> !urlsDaBase.contains(v.getUrl())).collect(Collectors.toList()));
 			
 		});
@@ -92,7 +90,7 @@ public class VagaServiceImpl implements VagaService {
 		return html;
 	}
 	
-	private List<Vaga> preencheAtributosVagas(List<String> urls) {
+	private List<Vaga> preencheAtributosVagas(List<String> urls, Linguagem linguagem) {
 		List<Vaga> vagas = new ArrayList<>();
 		
 		for(String url:urls) {
@@ -135,8 +133,8 @@ public class VagaServiceImpl implements VagaService {
     }
 	
 	private void validarVaga(Vaga vaga) {
-		if(isEmptyOrNull(vaga.getcargo()) || isEmptyOrNull(vaga.getEmpresa())
-		|| isEmptyOrNull(vaga.getData().toString())) {
+		if(isEmptyOrNull(vaga.getCargo()) || isEmptyOrNull(vaga.getEmpresa())
+		|| isEmptyOrNull(vaga.getData().toString()) || vaga.getLinguagem() != null) {
 			sendMail(vaga);
 		}
 	}

@@ -47,7 +47,7 @@ public class VagaServiceImpl implements VagaService {
 	}
 	
 	public ResponseEntity<Iterable<Vaga>> buscarVagas() {
-		
+
 		Arrays.asList(Linguagem.values()).stream().forEach(linguagem->{
 			urlVagas = buscaUrlsVagas(linguagem.url());
 			vagas = preencheAtributosVagas(urlVagas, linguagem);
@@ -104,9 +104,9 @@ public class VagaServiceImpl implements VagaService {
 			}
 			
 			Vaga novaVaga = new Vaga(descricaoCargo, empresa, url, LocalDate.now(),linguagem);
-			validarVaga(novaVaga);
 			vagas.add(novaVaga);
 		}
+		validarVagas(vagas);
 		return vagas;
 	}
 
@@ -117,10 +117,16 @@ public class VagaServiceImpl implements VagaService {
 		    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null; 
 	}
 	
-	private String sendMail(Vaga vaga) {
+	private String sendMail(List<Vaga> vagas) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setText("Algum atributo da vaga com url "+ vaga.getUrl() +" foi salvo null");
-        message.setTo("alexandremendes1005@gmail.com");
+		message.setSubject("API Vagas - Email de Validação");
+		message.setText("Algum atributo das vagas com url " + vagas.stream()
+																.map(v -> v.getUrl())
+																.collect(Collectors.toList())
+																.toString()
+																.replace("[", "")
+																.replace("]", "") + " foram salvos nulos.");
+		message.setTo("alexandremendes1005@gmail.com");
         message.setFrom("jdavidjl97@gmail.com");
 
         try {
@@ -132,11 +138,17 @@ public class VagaServiceImpl implements VagaService {
         }
     }
 	
-	private void validarVaga(Vaga vaga) {
-		if(isEmptyOrNull(vaga.getCargo()) || isEmptyOrNull(vaga.getEmpresa())
-		|| isEmptyOrNull(vaga.getData().toString()) || vaga.getLinguagem() != null) {
-			sendMail(vaga);
+	private void validarVagas(List<Vaga> vagas) {
+		List<Vaga> vagasInvalidadas = new ArrayList<>();
+		for(Vaga vaga : vagas) {
+			if(isEmptyOrNull(vaga.getCargo()) || isEmptyOrNull(vaga.getEmpresa())
+			|| isEmptyOrNull(vaga.getData().toString()) || vaga.getLinguagem() != null) {
+				vagasInvalidadas.add(vaga);
+			}
 		}
+
+		if(!vagasInvalidadas.isEmpty())
+			sendMail(vagasInvalidadas);
 	}
 	
 	private boolean isEmptyOrNull(String parametro) {

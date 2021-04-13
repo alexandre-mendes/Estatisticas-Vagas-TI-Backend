@@ -29,8 +29,6 @@ public class BuscadorSchedule {
 			System.out.println("Busca finalizada sem erros " + LocalDateTime.now());
 		} catch (Exception e) {
 			System.out.println("Ocorreu um erro durante a busca de vagas. " + e.getMessage());
-			System.out.println("Realizando nova tentativa.");
-			buscarVagas();
 		}
 	}
 }

@@ -1,10 +1,7 @@
 package br.com.projetoPI.estatisticasVagasTI.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -96,6 +93,7 @@ public class VagaServiceImpl implements VagaService {
 		for(String url:urls) {
 			Document urlDaPaginaVaga = getHtml(url);
 			String descricaoCargo = urlDaPaginaVaga.getElementsByClass("topcard__title").first().text();
+			String detalhes = urlDaPaginaVaga.getElementsByClass("description__text").first().text();
 			Elements links = urlDaPaginaVaga.getElementsByClass("topcard__org-name-link");
 			String empresa = urlDaPaginaVaga.title().substring(0, getHtml(url).title().indexOf("está contrat")).trim();
 			for(Element link:links) {
@@ -103,7 +101,7 @@ public class VagaServiceImpl implements VagaService {
 					empresa = link.text();
 			}
 			
-			Vaga novaVaga = new Vaga(descricaoCargo, empresa, url, LocalDate.now(),linguagem);
+			Vaga novaVaga = new Vaga(descricaoCargo, empresa, detalhes, url, LocalDate.now(),linguagem);
 			vagas.add(novaVaga);
 		}
 		validarVagas(vagas);

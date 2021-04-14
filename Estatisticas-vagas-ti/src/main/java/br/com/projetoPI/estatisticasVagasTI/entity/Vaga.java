@@ -44,6 +44,11 @@ public class Vaga implements Serializable {
 	@Column(name = "emp")
 	@Getter 
 	@Setter private String empresa;
+
+	@Column(name = "det", length = 10000)
+	@Getter
+	@Setter
+	private String detalhes;
 	
 	@Column(name = "url")
 	@Getter
@@ -61,9 +66,10 @@ public class Vaga implements Serializable {
 	
 	private Linguagem linguagem;
 	
-	public Vaga(String cargo,String empresa,String url, LocalDate data, Linguagem linguagem ) {
+	public Vaga(String cargo, String empresa, String detalhes, String url, LocalDate data, Linguagem linguagem ) {
 		this.cargo = cargo;
 		this.empresa = empresa;
+		this.detalhes = detalhes;
 		this.url = url;
 		this.data = data;
 		this.linguagem = linguagem;

@@ -9,7 +9,8 @@ public enum Linguagem {
 	CSHARP("https://www.linkedin.com/jobs/search/?distance=0&f_TP=1&f_TPR=r86400&geoId=103836099&keywords=C%23&location=Fortaleza%2C%20Cear%C3%A1%2C%20Brasil"),
 	C("https://www.linkedin.com/jobs/search/?distance=0&f_TP=1&f_TPR=r86400&geoId=103836099&keywords=C&location=Fortaleza%2C%20Cear%C3%A1%2C%20Brasil"),
 	DELPHI("https://www.linkedin.com/jobs/search/?distance=0&f_TP=1&f_TPR=r86400&geoId=103836099&keywords=delphi&location=Fortaleza%2C%20Cear%C3%A1%2C%20Brasil"),
-	CPLUSPUS("https://www.linkedin.com/jobs/search/?distance=0&f_TP=1&f_TPR=r86400&geoId=103836099&keywords=c%2B%2B&location=Fortaleza%2C%20Cear%C3%A1%2C%20Brasil");
+	CPLUSPUS("https://www.linkedin.com/jobs/search/?distance=0&f_TP=1&f_TPR=r86400&geoId=103836099&keywords=c%2B%2B&location=Fortaleza%2C%20Cear%C3%A1%2C%20Brasil"),
+	RUBY("https://www.linkedin.com/jobs/search/?f_TP=1&f_TPR=r86400&geoId=103836099&keywords=Ruby&location=Fortaleza%2C%2BCear%C3%A1%2C%2BBrasil&originalSubdomain=br");
 	
 	private String url;
 	

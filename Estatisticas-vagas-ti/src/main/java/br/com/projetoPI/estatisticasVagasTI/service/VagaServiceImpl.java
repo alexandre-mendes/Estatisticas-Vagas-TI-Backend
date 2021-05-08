@@ -1,12 +1,16 @@
 package br.com.projetoPI.estatisticasVagasTI.service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -81,6 +85,8 @@ public class VagaServiceImpl implements VagaService {
 		try {
 			html = Jsoup.connect(url)
 					.userAgent("Chrome/87.0.4280.88").timeout(5000).get();
+		} catch (HttpStatusException e) {
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,15 +1,15 @@
-package br.com.projetoPI.estatisticasVagasTI.schedule;
+package br.com.projeto_pi.estatisticas_vagas_ti.schedule;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
-import br.com.projetoPI.estatisticasVagasTI.service.VagaService;
+import br.com.projeto_pi.estatisticas_vagas_ti.entity.Vaga;
+import br.com.projeto_pi.estatisticas_vagas_ti.service.VagaService;
 
 @Component 
 @EnableScheduling 
@@ -22,9 +22,9 @@ public class BuscadorSchedule {
 	public void buscarVagas() {
 		try {
 			System.out.println("Iniciando busca de vagas " + LocalDateTime.now());
-			Iterator<Vaga> vagas = vagaService.buscarVagas().getBody().iterator();
-			while (vagas.hasNext()) {
-				System.out.println(vagas.next().getUrl());
+			List<Vaga> vagas = vagaService.buscarVagas();
+			for(Vaga vaga : vagas) {
+				System.out.println(vaga.getUrl());
 			}
 			System.out.println("Busca finalizada sem erros " + LocalDateTime.now());
 		} catch (Exception e) {

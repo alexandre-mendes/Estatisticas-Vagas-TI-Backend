@@ -1,4 +1,4 @@
-package enumerate;
+package br.com.projeto_pi.estatisticas_vagas_ti.enumerate;
 
 public enum Linguagem {
 	

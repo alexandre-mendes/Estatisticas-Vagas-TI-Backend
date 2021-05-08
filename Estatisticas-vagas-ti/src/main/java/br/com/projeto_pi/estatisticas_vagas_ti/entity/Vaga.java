@@ -1,4 +1,4 @@
-package br.com.projetoPI.estatisticasVagasTI.entity;
+package br.com.projeto_pi.estatisticas_vagas_ti.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import enumerate.Linguagem;
+import br.com.projeto_pi.estatisticas_vagas_ti.enumerate.Linguagem;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,7 +43,8 @@ public class Vaga implements Serializable {
 	
 	@Column(name = "emp")
 	@Getter 
-	@Setter private String empresa;
+	@Setter 
+	private String empresa;
 
 	@Column(name = "det", length = 10000)
 	@Getter
@@ -57,13 +58,13 @@ public class Vaga implements Serializable {
 	
 	@Column(name = "dat")
 	@Getter 
-	@Setter private LocalDate data;
+	@Setter 
+	private LocalDate data;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "lin")
 	@Getter 
 	@Setter 
-	
 	private Linguagem linguagem;
 	
 	public Vaga(String cargo, String empresa, String detalhes, String url, LocalDate data, Linguagem linguagem ) {

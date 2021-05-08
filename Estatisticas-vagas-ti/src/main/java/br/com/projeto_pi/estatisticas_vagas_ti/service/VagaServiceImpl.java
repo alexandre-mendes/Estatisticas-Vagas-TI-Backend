@@ -1,4 +1,4 @@
-package br.com.projetoPI.estatisticasVagasTI.service;
+package br.com.projeto_pi.estatisticas_vagas_ti.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,15 +16,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
-import br.com.projetoPI.estatisticasVagasTI.repository.VagaRepository;
-import enumerate.Linguagem;
+import br.com.projeto_pi.estatisticas_vagas_ti.entity.Vaga;
+import br.com.projeto_pi.estatisticas_vagas_ti.enumerate.Linguagem;
+import br.com.projeto_pi.estatisticas_vagas_ti.repository.VagaRepository;
 
 @Service
 public class VagaServiceImpl implements VagaService {
@@ -41,13 +39,11 @@ public class VagaServiceImpl implements VagaService {
 	private List<String> urlVagas;
 	private List<String> urlsDaBase;
 	
-	
-	public ResponseEntity<Iterable<Vaga>> buscarVagasDaBase() {
-		
-		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.findAll(), HttpStatus.OK);
+	public List<Vaga> buscarVagasDaBase() {
+		return vagaRepository.findAll();
 	}
 	
-	public ResponseEntity<Iterable<Vaga>> buscarVagas() {
+	public List<Vaga> buscarVagas() {
 
 		Arrays.asList(Linguagem.values()).stream().forEach(linguagem->{
 			urlVagas = buscaUrlsVagas(linguagem.url());
@@ -58,7 +54,7 @@ public class VagaServiceImpl implements VagaService {
 			
 		});
 		
-		return new ResponseEntity<Iterable<Vaga>>(vagaRepository.saveAll(vagasParaSalvar), HttpStatus.OK);
+		return vagaRepository.saveAll(vagasParaSalvar);
 	}
 
 	private List<String> buscaUrlsVagas(String url) {

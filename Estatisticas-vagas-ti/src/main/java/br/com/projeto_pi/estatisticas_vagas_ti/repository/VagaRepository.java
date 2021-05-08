@@ -1,15 +1,15 @@
-package br.com.projetoPI.estatisticasVagasTI.repository;
+package br.com.projeto_pi.estatisticas_vagas_ti.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import br.com.projetoPI.estatisticasVagasTI.entity.Vaga;
-import enumerate.Linguagem;
+import br.com.projeto_pi.estatisticas_vagas_ti.entity.Vaga;
+import br.com.projeto_pi.estatisticas_vagas_ti.enumerate.Linguagem;
 
-public interface VagaRepository extends CrudRepository<Vaga, Long> {
+public interface VagaRepository extends JpaRepository<Vaga, Long> {
 
 	@Query(value = "select 				"
 				+ "		v 				"

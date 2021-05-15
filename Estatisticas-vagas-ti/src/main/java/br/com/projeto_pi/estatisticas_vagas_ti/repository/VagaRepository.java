@@ -1,5 +1,6 @@
 package br.com.projeto_pi.estatisticas_vagas_ti.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,7 @@ public interface VagaRepository extends JpaRepository<Vaga, Long> {
 				+ "		v.url in (:urls)"
 				+ "	and 				"
 				+ "		v.linguagem = :linguagem")
-	public List<Vaga> obterVagasPorUrls(@Param(value = "urls") List<String> urls,@Param(value = "linguagem") Linguagem linguagem); 
+	public List<Vaga> obterVagasPorUrls(@Param(value = "urls") List<String> urls,@Param(value = "linguagem") Linguagem linguagem);
+	
+	public List<Vaga> findByDataBetween(LocalDate dataInicio, LocalDate dataFim);
 }

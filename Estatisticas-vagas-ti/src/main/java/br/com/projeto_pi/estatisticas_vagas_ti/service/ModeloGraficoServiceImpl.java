@@ -31,8 +31,14 @@ public class ModeloGraficoServiceImpl implements ModeloGraficoService {
 		vagasAgrupadasPorLinguagem = vagas.stream()
 				.collect(Collectors.groupingBy(Vaga::getLinguagem));
 		
-		for(Linguagem linguagem : vagasAgrupadasPorLinguagem.keySet()) {
-			Integer quantidade = vagasAgrupadasPorLinguagem.get(linguagem).size();
+		for(Linguagem linguagem : Linguagem.values()) {
+			Integer quantidade;
+			
+			try {
+				quantidade = vagasAgrupadasPorLinguagem.get(linguagem).size();
+			} catch (NullPointerException e) {
+				quantidade = 0;
+			}
 			
 			ModeloGraficoDTO modelo = new ModeloGraficoDTO();
 			modelo.setLinguagem(linguagem);
